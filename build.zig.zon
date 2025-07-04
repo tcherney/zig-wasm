@@ -1,0 +1,18 @@
+.{
+    .name = .zig_wasm,
+    .version = "0.0.0",
+    .fingerprint = 0x61c2321d02fea2bd,
+    .minimum_zig_version = "0.14.0",
+    .dependencies = .{
+        .emsdk = .{
+            .url = "git+https://github.com/emscripten-core/emsdk#4.0.9",
+            .hash = "N-V-__8AAJl1DwBezhYo_VE6f53mPVm00R-Fk28NPW7P14EQ",
+            .lazy = true,
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}
