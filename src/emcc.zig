@@ -96,9 +96,11 @@ pub fn Build(b: *std.Build, s: ?*std.Build.Step.Compile, m: ?*std.Build.Module, 
             "-sSTACK_OVERFLOW_CHECK=1",
             "-sEXPORTED_RUNTIME_METHODS=['requestFullscreen']",
             "-sASYNCIFY",
+            //"-sNO_EXIT_RUNTIME",
             "-sUSE_OFFSET_CONVERTER",
             "-sINITIAL_MEMORY=167772160",
-            "-O0",
+            "-sALLOW_MEMORY_GROWTH",
+            "-O3",
             "--emrun",
             "-sSINGLE_FILE",
         });
@@ -127,3 +129,49 @@ pub fn Build(b: *std.Build, s: ?*std.Build.Step.Compile, m: ?*std.Build.Module, 
     }
     return Error.MissingDependency;
 }
+
+pub const EmsdkWrapper = struct {
+    const c = @cImport({
+        @cInclude("emscripten/emscripten.h");
+        @cInclude("emscripten/html5.h");
+    });
+    pub const EmscriptenMouseEvent = c.EmscriptenMouseEvent;
+    pub const EmscriptenWheelEvent = c.EmscriptenWheelEvent;
+    pub const EmscriptenTouchEvent = c.EmscriptenTouchEvent;
+    pub extern fn emscripten_set_main_loop(*const fn () callconv(.C) void, c_int, c_int) void;
+    pub extern fn emscripten_set_main_loop_arg(*const fn (*anyopaque) callconv(.C) void, *anyopaque, c_int, c_int) void;
+    pub extern fn emscripten_sleep(c_uint) void;
+    pub extern fn emscripten_request_animation_frame_loop(*const fn (f64, *anyopaque) callconv(.C) bool, *anyopaque) void;
+    pub extern fn emscripten_run_script([]const u8) void;
+    pub fn emscripten_set_click_callback(target: [*:0]const u8, ctx: *anyopaque, use_capture: bool, handler: ?*const fn (c_int, ?*const EmscriptenMouseEvent, ?*anyopaque) callconv(.C) bool) c_int {
+        //_ = target;
+        //const window: [*:0]const u8 = @ptrFromInt(2);
+        return c.emscripten_set_click_callback(target, ctx, use_capture, handler);
+    }
+    pub fn emscripten_set_mousedown_callback(target: [*:0]const u8, ctx: *anyopaque, use_capture: bool, handler: ?*const fn (c_int, ?*const EmscriptenMouseEvent, ?*anyopaque) callconv(.C) bool) c_int {
+        //_ = target;
+        //const window: [*:0]const u8 = @ptrFromInt(2);
+        return c.emscripten_set_mousedown_callback(target, ctx, use_capture, handler);
+    }
+    pub fn emscripten_set_mousemove_callback(target: [*:0]const u8, ctx: *anyopaque, use_capture: bool, handler: ?*const fn (c_int, ?*const EmscriptenMouseEvent, ?*anyopaque) callconv(.C) bool) c_int {
+        //_ = target;
+        //const window: [*:0]const u8 = @ptrFromInt(2);
+        return c.emscripten_set_mousemove_callback(target, ctx, use_capture, handler);
+    }
+    pub fn emscripten_set_touchstart_callback(target: [*:0]const u8, ctx: *anyopaque, use_capture: bool, handler: ?*const fn (c_int, ?*const EmscriptenTouchEvent, ?*anyopaque) callconv(.C) bool) c_int {
+        //_ = target;
+        //const window: [*:0]const u8 = @ptrFromInt(2);
+        return c.emscripten_set_touchstart_callback(target, ctx, use_capture, handler);
+    }
+    pub fn emscripten_set_touchmove_callback(target: [*:0]const u8, ctx: *anyopaque, use_capture: bool, handler: ?*const fn (c_int, ?*const EmscriptenTouchEvent, ?*anyopaque) callconv(.C) bool) c_int {
+        //_ = target;
+        //const window: [*:0]const u8 = @ptrFromInt(2);
+        return c.emscripten_set_touchmove_callback(target, ctx, use_capture, handler);
+    }
+
+    pub fn emscripten_set_wheel_callback(target: [*:0]const u8, ctx: *anyopaque, use_capture: bool, handler: ?*const fn (c_int, ?*const EmscriptenWheelEvent, ?*anyopaque) callconv(.C) bool) c_int {
+        //_ = target;
+        //const window: [*:0]const u8 = @ptrFromInt(2);
+        return c.emscripten_set_wheel_callback(target, ctx, use_capture, handler);
+    }
+};
